@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给张紫怡的祝福</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none; /* 禁止手机滑动干扰 */
+        }
+        /* 大弹窗样式 */
+        .large-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 550px;
+            height: 280px;
+            background-color: #FFE5E5;
+            border: 3px solid #FFCCCC;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .large-text {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            color: #333;
+            line-height: 1.8;
+        }
+        /* 碎片样式 */
+        .shatter-piece {
+            position: fixed;
+            background-color: #FFE5E5;
+            border: 1px solid #FFCCCC;
+            z-index: 999;
+        }
+        /* 小弹窗样式 */
+        .small-popup {
+            position: fixed;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+            animation: fadeIn 0.5s forwards;
+        }
+        .small-text {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            line-height: 1.5;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 大弹窗（固定文字：张紫怡   希望你） -->
+    <div class="large-popup" id="largePopup">
+        <div class="large-text">张紫怡   希望你</div>
+    </div>
+
+    <script>
+        // 配置项（和你的Python版本一致）
+        const LARGE_SHOW_TIME = 3000; // 大弹窗显示3秒
+        const SHATTER_PIECE_COUNT = 36; // 36块碎片
+        const SMALL_POPUP_COUNT = 50; // 50个小弹窗
+        const SMALL_LAYER_DELAY = 80; // 小弹窗分层间隔80ms
+        const SMALL_TOTAL_SHOW_TIME = 6000; // 小弹窗显示6秒后消失
+        // 小弹窗祝福语（和你新增的一致）
+        const SMALL_BLESSINGS = [
+            "平安喜乐", "万事顺意", "日子常新", "未来可期",
+            "阳光满路", "温暖如初", "笑容常在", "好运连连",
+            "生活明朗", "万物可爱", "平安顺遂", "喜乐无忧",
+            "步履不停", "全力以赴", "满载而归", "喜乐相伴",
+            "好运加倍","每天好心情","越来越漂亮","天冷了，多穿衣服",
+            "每天元气满满","记得吃水果", "期待下一次见面", "今天过得开心吗",
+            "少熬夜", "好好爱自己", "别焦虑", "别内耗", "你值得被爱", "多喝水哦",
+            "好运加倍","每天好心情","越来越漂亮","天冷了，多穿衣服",
+            "每天元气满满","记得吃水果", "期待下一次见面", "今天过得开心吗",
+            "少熬夜", "好好爱自己", "别焦虑", "别内耗", "你值得被爱", "多喝水哦"
+        ];
+        // 小弹窗背景色（和Python版本一致）
+        const SMALL_BG_COLORS = [
+            ["#E6F7FF", "#CCE5FF"], ["#F0F9E8", "#D9EFD1"],
+            ["#FFF2E8", "#FFE0CC"], ["#FCE4EC", "#F8C8D8"],
+            ["#F3E5F5", "#E5D1E2"], ["#E8F5E9", "#D1EFD9"],
+            ["#FFF8E1", "#FFE8B2"], ["#E0F7FA", "#B2EBF2"],
+            ["#FFE0B2", "#FFCC80"], ["#E1F5FE", "#B3E5FC"],
+            ["#F1F8E9", "#D0E9C6"], ["#F3E5F5", "#E1BEE7"]
+        ];
+
+        // 大弹窗破碎逻辑
+        const largePopup = document.getElementById('largePopup');
+        setTimeout(() => {
+            shatterLargePopup();
+        }, LARGE_SHOW_TIME);
+
+        function shatterLargePopup() {
+            largePopup.style.display = 'none';
+            const rect = largePopup.getBoundingClientRect();
+            const pieceCol = 6;
+            const pieceRow = 6;
+            const pieceW = rect.width / pieceCol;
+            const pieceH = rect.height / pieceRow;
+
+            // 生成36块碎片
+            for (let row = 0; row < pieceRow; row++) {
+                for (let col = 0; col < pieceCol; col++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'shatter-piece';
+                    piece.style.width = `${pieceW}px`;
+                    piece.style.height = `${pieceH}px`;
+                    piece.style.left = `${rect.left + col * pieceW}px`;
+                    piece.style.top = `${rect.top + row * pieceH}px`;
+                    document.body.appendChild(piece);
+
+                    // 碎片飞散+缩小+渐隐动画
+                    let x = rect.left + col * pieceW;
+                    let y = rect.top + row * pieceH;
+                    let w = pieceW;
+                    let h = pieceH;
+                    let alpha = 1;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 1 + Math.random() * 2;
+
+                    const animatePiece = () => {
+                        x += Math.cos(angle) * speed;
+                        y += Math.sin(angle) * speed;
+                        w *= 0.97;
+                        h *= 0.97;
+                        alpha -= 0.03;
+
+                        if (w > 5 && alpha > 0) {
+                            piece.style.left = `${x}px`;
+                            piece.style.top = `${y}px`;
+                            piece.style.width = `${w}px`;
+                            piece.style.height = `${h}px`;
+                            piece.style.opacity = alpha;
+                            requestAnimationFrame(animatePiece);
+                        } else {
+                            document.body.removeChild(piece);
+                            // 碎片全部消失后生成小弹窗
+                            if (document.querySelectorAll('.shatter-piece').length === 0) {
+                                createSmallPopups();
+                            }
+                        }
+                    };
+                    requestAnimationFrame(animatePiece);
+                }
+            }
+        }
+
+        // 生成小弹窗（分层覆盖+统一消失）
+        function createSmallPopups() {
+            const smallPopups = [];
+            for (let i = 0; i < SMALL_POPUP_COUNT; i++) {
+                setTimeout(() => {
+                    const popup = document.createElement('div');
+                    popup.className = 'small-popup';
+                    // 随机尺寸
+                    const w = 120 + Math.random() * 60;
+                    const h = 80 + Math.random() * 40;
+                    // 随机位置（避免超出屏幕）
+                    const x = Math.random() * (window.innerWidth - w);
+                    const y = Math.random() * (window.innerHeight - h);
+                    // 随机背景色+边框色
+                    const [bg, border] = SMALL_BG_COLORS[Math.floor(Math.random() * SMALL_BG_COLORS.length)];
+                    popup.style.width = `${w}px`;
+                    popup.style.height = `${h}px`;
+                    popup.style.left = `${x}px`;
+                    popup.style.top = `${y}px`;
+                    popup.style.backgroundColor = bg;
+                    popup.style.borderColor = border;
+                    // 随机祝福语
+                    const text = SMALL_BLESSINGS[Math.floor(Math.random() * SMALL_BLESSINGS.length)];
+                    popup.innerHTML = `<div class="small-text">${text}</div>`;
+                    document.body.appendChild(popup);
+                    smallPopups.push(popup);
+
+                    // 所有小弹窗生成后，6秒后统一渐隐消失
+                    if (smallPopups.length === SMALL_POPUP_COUNT) {
+                        setTimeout(() => {
+                            smallPopups.forEach(p => {
+                                let alpha = 1;
+                                const fadeOut = () => {
+                                    alpha -= 0.1;
+                                    p.style.opacity = alpha;
+                                    if (alpha > 0) requestAnimationFrame(fadeOut);
+                                    else document.body.removeChild(p);
+                                };
+                                requestAnimationFrame(fadeOut);
+                            });
+                        }, SMALL_TOTAL_SHOW_TIME);
+                    }
+                }, i * SMALL_LAYER_DELAY);
+            }
+        }
+    </script>
+</body>
+</html>
